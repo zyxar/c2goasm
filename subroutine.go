@@ -262,11 +262,15 @@ func extractNamePart(part string) (int, string) {
 }
 
 func extractName(name string) string {
-
-	// Only proceed for C++ mangled names
-	if !strings.HasPrefix(name, "_ZN") {
-		return name
+	if strings.HasPrefix(name, "_Z") {
+		return extractNameMangled(name)
+	} else if strings.HasPrefix(name, "__Z") {
+		return "_" + extractNameMangled(name[1:])
 	}
+	return name
+}
+
+func extractNameMangled(name string) string {
 
 	var parts []string
 
