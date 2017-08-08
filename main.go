@@ -29,6 +29,21 @@ var (
 	stripFlag    = flag.Bool("s", false, "Strip comments")
 	compactFlag  = flag.Bool("c", false, "Compact byte codes")
 	formatFlag   = flag.Bool("f", false, "Format using asmfmt")
+	compilerFlag = flag.String("m", "", "Optional C/CXX compiler options")
+)
+
+var (
+	cCompileOptions = []string{
+		"-masm=intel",
+		"-mno-red-zone",
+		"-mstackrealign",
+		"-mllvm",
+		"-inline-threshold=1000",
+		"-fno-asynchronous-unwind-tables",
+		"-fno-exceptions",
+		"-fno-rtti",
+	}
+	cCompiler string = "clang"
 )
 
 func main() {
@@ -39,15 +54,31 @@ func main() {
 		return
 	}
 	var err error
-	srcFile := flag.Arg(0)                                // A/B/C/src.s
-	srcFileBase := filepath.Base(srcFile)                 // src.s
-	ext := strings.ToLower(filepath.Ext(srcFileBase))     // .s
+	srcFile := flag.Arg(0)                                // A/B/C/src.{s,c}
+	srcFileBase := filepath.Base(srcFile)                 // src.{s,c}
+	ext := strings.ToLower(filepath.Ext(srcFileBase))     // .{s,c}
 	srcFileBase = srcFileBase[:len(srcFileBase)-len(ext)] // src
 	assemblyFile := srcFileBase + "_amd64.s"              // src_amd64.s
 	goCompanion := srcFileBase + "_amd64.go"              // src_amd64.go
 
+	switch ext {
+	default:
+		fmt.Printf("unsupported source file: %s\n", srcFile)
+		os.Exit(1)
+	case ".s":
+	case ".c", ".cc", ".cpp":
+		if *compilerFlag != "" {
+			for _, s := range strings.Split(*compilerFlag, ",") {
+				cCompileOptions = append(cCompileOptions, s)
+			}
+		}
+		fmt.Println("Compiling", srcFile)
+		invoke(cCompiler, append(cCompileOptions, "-S", srcFile)...)
+	}
+
+	srcFile = srcFileBase + ".s"
 	if _, err = os.Stat(goCompanion); os.IsNotExist(err) {
-		fmt.Printf("%s not found\n", goCompanion)
+		fmt.Printf("go file not found: %s\n", goCompanion)
 		os.Exit(1)
 	}
 
