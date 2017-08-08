@@ -17,7 +17,6 @@
 package main
 
 import (
-	"errors"
 	"fmt"
 	"regexp"
 	"strconv"
@@ -79,11 +78,9 @@ var regexpFuncAndArgs = regexp.MustCompile(`^\s*func\s+([^\(]*)\(([^\)]*)\)(.*)`
 var regexpReturnVals = regexp.MustCompile(`^\((.*)\)`)
 
 func getGolangArgs(protoName, goline string) (isFunc bool, args, rets []string, err error) {
-
 	// Search for name of function and arguments
 	if match := regexpFuncAndArgs.FindStringSubmatch(goline); len(match) > 2 {
 		if match[1] == "_"+protoName {
-
 			args, rets = []string{}, []string{}
 			for _, arg := range strings.Split(match[2], ",") {
 				args = append(args, strings.Fields(arg)[0])
@@ -97,15 +94,12 @@ func getGolangArgs(protoName, goline string) (isFunc bool, args, rets []string, 
 						rets = append(rets, strings.Fields(ret)[0])
 					}
 				} else {
-					return false, args, rets, errors.New(fmt.Sprintf("Badly formatted return argument (please use parenthesis and proper arguments naming): %s", trailer))
+					return false, args, rets, fmt.Errorf("Badly formatted return argument (please use parenthesis and proper arguments naming): %s", trailer)
 				}
-
 			}
-
 			return true, args, rets, nil
 		}
 	}
-
 	return false, []string{}, []string{}, nil
 }
 

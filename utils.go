@@ -4,8 +4,8 @@ import (
 	"bufio"
 	"encoding/hex"
 	"fmt"
-	"log"
 	"os"
+	"os/exec"
 	"regexp"
 	"strings"
 )
@@ -93,10 +93,10 @@ func compactArray(opcodes []byte) []string {
 	return result
 }
 
-func compactOpcodes(file string) {
+func compactOpcodes(file string) error { // TODO: eliminate io
 	lines, err := readLines(file)
 	if err != nil {
-		log.Fatalf("readLines: %s", err)
+		return err
 	}
 	var result []string
 	opcodes := make([]byte, 0, 1000)
@@ -108,7 +108,7 @@ func compactOpcodes(file string) {
 				dst := make([]byte, hex.DecodedLen(len(m[0][3:])))
 				_, err := hex.Decode(dst, []byte(m[0][3:]))
 				if err != nil {
-					log.Fatal(err)
+					return err
 				}
 				for i := len(dst) - 1; i >= 0; i -= 1 { // append starting with lowest byte first
 					opcodes = append(opcodes, dst[i:i+1]...)
@@ -119,20 +119,16 @@ func compactOpcodes(file string) {
 				result = append(result, compactArray(opcodes)...)
 				opcodes = opcodes[:0]
 			}
-
 			result = append(result, l)
 		}
 	}
-	err = writeLines(result, file, false)
-	if err != nil {
-		log.Fatalf("writeLines: %s", err)
-	}
+	return writeLines(result, file, false)
 }
 
-func stripGoasmComments(file string) {
+func stripGoasmComments(file string) error { // TODO: eliminate io
 	lines, err := readLines(file)
 	if err != nil {
-		log.Fatalf("readLines: %s", err)
+		return err
 	}
 	for i, l := range lines {
 		if strings.Contains(l, "LONG") || strings.Contains(l, "WORD") || strings.Contains(l, "BYTE") {
@@ -140,8 +136,12 @@ func stripGoasmComments(file string) {
 			lines[i] = strings.SplitN(l, opcode, 2)[0] + opcode
 		}
 	}
-	err = writeLines(lines, file, false)
-	if err != nil {
-		log.Fatalf("writeLines: %s", err)
-	}
+	return writeLines(lines, file, false)
+}
+
+func invoke(name string, arg ...string) error {
+	cmd := exec.Command(name, arg...)
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
+	return cmd.Run()
 }
