@@ -80,7 +80,7 @@ var regexpReturnVals = regexp.MustCompile(`^\((.*)\)`)
 func getGolangArgs(protoName, goline string) (isFunc bool, args, rets []string, err error) {
 	// Search for name of function and arguments
 	if match := regexpFuncAndArgs.FindStringSubmatch(goline); len(match) > 2 {
-		if match[1] == "_"+protoName {
+		if match[1] == protoName {
 			args, rets = []string{}, []string{}
 			for _, arg := range strings.Split(match[2], ",") {
 				args = append(args, strings.Fields(arg)[0])

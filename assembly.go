@@ -52,7 +52,7 @@ func writeGoasmPrologue(sub Subroutine, stack Stack, arguments, returnValues []s
 	var result []string
 
 	// Output definition of subroutine
-	result = append(result, fmt.Sprintf("TEXT ·_%s(SB), $%d-%d", sub.name, stack.GolangLocalStackFrameSize(),
+	result = append(result, fmt.Sprintf("TEXT ·%s(SB), $%d-%d", sub.name, stack.GolangLocalStackFrameSize(),
 		getTotalSizeOfArgumentsAndReturnValues(0, len(arguments)-1, returnValues)), "")
 
 	// Load Golang arguments into registers

@@ -27,7 +27,7 @@ func TestAssemblyAlignedWithTableWithStackArgs(t *testing.T) {
 	epilogue.Pops = append(epilogue.Pops, "rbp", "r15", "r14", "r13", "r12", "rbx")
 	table := Table{Name: "LCDATA3"}
 
-	subroutine := Subroutine{name: "SimdSse2MedianFilterRhomb5x5", epilogue: epilogue, table: table}
+	subroutine := Subroutine{name: "_SimdSse2MedianFilterRhomb5x5", epilogue: epilogue, table: table}
 	arguments, returnValues := []string{}, []string{}
 	arguments = append(arguments, "src", "srcStride", "width", "height", "channelCount", "dst", "dstStride")
 
@@ -78,7 +78,7 @@ func TestAssemblyUnalignedWithTableWithStackArgs(t *testing.T) {
 	epilogue.Pops = append(epilogue.Pops, "rbp", "r15", "r14", "r13", "r12", "rbx")
 	table := Table{Name: "LCDATA2"}
 
-	subroutine := Subroutine{name: "SimdSse2MedianFilterSquare3x3", epilogue: epilogue, table: table}
+	subroutine := Subroutine{name: "_SimdSse2MedianFilterSquare3x3", epilogue: epilogue, table: table}
 	arguments, returnValues := []string{}, []string{}
 	arguments = append(arguments, "src", "srcStride", "width", "height", "channelCount", "dst", "dstStride")
 
@@ -127,7 +127,7 @@ func TestAssemblyUnalignedWithTableWithStackArgsWithStackZeroSize(t *testing.T) 
 	epilogue.Pops = append(epilogue.Pops, "rbp", "r15", "r14", "r13", "r12", "rbx")
 	table := Table{Name: "LCDATA1"}
 
-	subroutine := Subroutine{name: "SimdSse2MedianFilterRhomb3x3", epilogue: epilogue, table: table}
+	subroutine := Subroutine{name: "_SimdSse2MedianFilterRhomb3x3", epilogue: epilogue, table: table}
 	arguments, returnValues := []string{}, []string{}
 	arguments = append(arguments, "src", "srcStride", "width", "height", "channelCount", "dst", "dstStride")
 
