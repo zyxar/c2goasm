@@ -19,9 +19,7 @@ package main
 import (
 	"fmt"
 	"regexp"
-	"strconv"
 	"strings"
-	"unicode"
 )
 
 var regexpRet = regexp.MustCompile(`^\s*ret`)
@@ -47,7 +45,7 @@ func splitOnGlobals(lines []string) []Global {
 		if strings.Contains(line, ".globl") {
 
 			scrambled := strings.TrimSpace(strings.Split(line, ".globl")[1])
-			name := extractName(scrambled)
+			name := parseProtoName(scrambled)
 
 			labelLine := findLabel(lines, scrambled)
 
@@ -245,52 +243,4 @@ func findLabel(lines []string, label string) int {
 	}
 
 	panic(fmt.Sprintf("Failed to find label: %s", labelDef))
-}
-
-func extractNamePart(part string) (int, string) {
-
-	digits := 0
-	for _, d := range part {
-		if unicode.IsDigit(d) {
-			digits += 1
-		} else {
-			break
-		}
-	}
-	length, _ := strconv.Atoi(part[:digits])
-	return digits + length, part[digits:(digits + length)]
-}
-
-func extractName(name string) string {
-	if strings.HasPrefix(name, "_Z") {
-		return extractNameMangled(name)
-	} else if strings.HasPrefix(name, "__Z") {
-		return "_" + extractNameMangled(name[1:])
-	}
-	return name
-}
-
-func extractNameMangled(name string) string {
-
-	var parts []string
-
-	// Parse C++ mangled name in the form of '_ZN4Simd4Avx213Yuv444pToBgraEPKhmS2_mS2_mmmPhmh'
-	for index, ch := range name {
-		if unicode.IsDigit(ch) {
-
-			for index < len(name) {
-				size, part := extractNamePart(name[index:])
-				if size == 0 {
-					break
-				}
-
-				parts = append(parts, part)
-				index += size
-			}
-
-			break
-		}
-	}
-
-	return strings.Join(parts, "")
 }

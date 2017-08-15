@@ -21,52 +21,21 @@ import (
 	"testing"
 )
 
-func testName(t *testing.T, fullname, expected string) {
-	name := extractName(fullname)
-	if name != expected {
-		t.Errorf("TestNames(): \nexpected %s\ngot      %s", expected, name)
-	}
-}
-
-func TestNames(t *testing.T) {
-
-	// C++ name mangling
-	testName(t, "_ZN4Simd4Avx213Yuv444pToBgraEPKhmS2_mS2_mmmPhmh", "SimdAvx2Yuv444pToBgra")
-	testName(t, "_ZN4Simd4Avx213Yuv420pToBgraEPKhmS2_mS2_mmmPhmh", "SimdAvx2Yuv420pToBgra")
-	testName(t, "_ZN4Simd4Avx213Yuv422pToBgraEPKhmS2_mS2_mmmPhmh", "SimdAvx2Yuv422pToBgra")
-	testName(t, "_ZN4Simd4Avx213ReduceGray2x2EPKhmmmPhmmm", "SimdAvx2ReduceGray2x2")
-	testName(t, "_ZN4Simd4Avx216AbsDifferenceSumEPKhmS2_mmmPy", "SimdAvx2AbsDifferenceSum")
-
-	testName(t, "__ZN4Simd4Avx213Yuv444pToBgraEPKhmS2_mS2_mmmPhmh", "_SimdAvx2Yuv444pToBgra")
-	testName(t, "__ZN4Simd4Avx213Yuv420pToBgraEPKhmS2_mS2_mmmPhmh", "_SimdAvx2Yuv420pToBgra")
-	testName(t, "__ZN4Simd4Avx213Yuv422pToBgraEPKhmS2_mS2_mmmPhmh", "_SimdAvx2Yuv422pToBgra")
-	testName(t, "__ZN4Simd4Avx213ReduceGray2x2EPKhmmmPhmmm", "_SimdAvx2ReduceGray2x2")
-	testName(t, "__ZN4Simd4Avx216AbsDifferenceSumEPKhmS2_mmmPy", "_SimdAvx2AbsDifferenceSum")
-
-	// Plain C style names
-	testName(t, "XORShift128Plus", "XORShift128Plus")
-}
-
 func subroutineEqual(a, b []Subroutine) bool {
-
 	if a == nil && b == nil {
 		return true
 	}
-
 	if a == nil || b == nil {
 		return false
 	}
-
 	if len(a) != len(b) {
 		return false
 	}
-
 	for i := range a {
 		if !(a[i].name == b[i].name && equalString(a[i].body, b[i].body)) {
 			return false
 		}
 	}
-
 	return true
 }
 
@@ -184,7 +153,7 @@ LBB0_15:                                ## %_ZN4Simd4Avx210BgraToGrayILb1EEEvPKh
 `, "\n")
 
 	subroutine1 := []Subroutine{}
-	subroutine1 = append(subroutine1, Subroutine{name: "_SimdAvx2BgraToGray", body: src1[25:98]})
+	subroutine1 = append(subroutine1, Subroutine{name: "SimdAvx2BgraToGray", body: src1[25:98]})
 
 	testSubroutine(t, src1, subroutine1)
 
@@ -399,9 +368,9 @@ LBB2_20:                                ## %_ZN4Simd4Avx213Yuv422pToBgraILb1EEEv
 .subsections_via_symbols`, "\n")
 
 	subroutine2 := []Subroutine{}
-	subroutine2 = append(subroutine2, Subroutine{name: "_SimdAvx2Yuv444pToBgra", body: src2[23:60]})
-	subroutine2 = append(subroutine2, Subroutine{name: "_SimdAvx2Yuv420pToBgra", body: src2[84:120]})
-	subroutine2 = append(subroutine2, Subroutine{name: "_SimdAvx2Yuv422pToBgra", body: src2[144:207]})
+	subroutine2 = append(subroutine2, Subroutine{name: "SimdAvx2Yuv444pToBgra", body: src2[23:60]})
+	subroutine2 = append(subroutine2, Subroutine{name: "SimdAvx2Yuv420pToBgra", body: src2[84:120]})
+	subroutine2 = append(subroutine2, Subroutine{name: "SimdAvx2Yuv422pToBgra", body: src2[144:207]})
 
 	testSubroutine(t, src2, subroutine2)
 
@@ -422,7 +391,7 @@ __ZN4Simd4Avx214MultiplyAndAddEPfS1_S1_S1_: ## @_ZN4Simd4Avx214MultiplyAndAddEPf
 .subsections_via_symbols`, "\n")
 
 	subroutine3 := []Subroutine{}
-	subroutine3 = append(subroutine3, Subroutine{name: "_SimdAvx2MultiplyAndAdd", body: src3[6:13]})
+	subroutine3 = append(subroutine3, Subroutine{name: "SimdAvx2MultiplyAndAdd", body: src3[6:13]})
 
 	testSubroutine(t, src3, subroutine3)
 
@@ -457,14 +426,14 @@ __ZL1a:
 `, "\n")
 
 	subroutine4 := []Subroutine{}
-	subroutine4 = append(subroutine4, Subroutine{name: "_MultiplyAndAddConstant", body: src4[9:16]})
+	subroutine4 = append(subroutine4, Subroutine{name: "MultiplyAndAddConstant", body: src4[9:16]})
 
 	testSubroutine(t, src4, subroutine4)
 
 	subroutine5 := []Subroutine{}
-	subroutine5 = append(subroutine5, Subroutine{name: "_SimdSse2BgraToYuv420p", body: srcOsx[43:53]})
-	subroutine5 = append(subroutine5, Subroutine{name: "_SimdSse2BgraToYuv422p", body: srcOsx[94:103]})
-	subroutine5 = append(subroutine5, Subroutine{name: "_SimdSse2BgraToYuv444p", body: srcOsx[142:151]})
+	subroutine5 = append(subroutine5, Subroutine{name: "SimdSse2BgraToYuv420p", body: srcOsx[43:53]})
+	subroutine5 = append(subroutine5, Subroutine{name: "SimdSse2BgraToYuv422p", body: srcOsx[94:103]})
+	subroutine5 = append(subroutine5, Subroutine{name: "SimdSse2BgraToYuv444p", body: srcOsx[142:151]})
 
 	testSubroutine(t, srcOsx, subroutine5)
 
